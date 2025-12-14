@@ -1,4 +1,4 @@
-import { Component, Signal } from '@angular/core';
+import { Component, signal, computed, effect } from '@angular/core';
 
 @Component({
   selector: 'app-product',
@@ -7,16 +7,25 @@ import { Component, Signal } from '@angular/core';
 })
 export class ProductComponent {
   price : number = 8000 ;
-  quantity : number = 500;
-  total : number = this.price * this.quantity;
+  quantity = signal<number>(1);
+  total = computed(() =>this.price * this.quantity());
+  counter = signal(0);
+
+  constructor() {
+    effect(() => {
+      console.log("quantity"+ this.quantity())
+      console.log("total" + this.quantity())
+      this.counter.set(4);
+    },{allowSignalWrites: true});
+  }
 
   decrement() {
-    --this.quantity;
-    this.total = this.price * this.quantity;
+    this.quantity.set(this.quantity()+1);
+
   }
 
   increment() {
-    ++this.quantity;
-    this.total = this.price * this.quantity;
+    this.quantity.update(value => value + 1);
+
   }
 }
